@@ -16,7 +16,7 @@ namespace OrderManageSystem
     {
         private List<Good> GoodsList = new List<Good>();
 
-        Goods()
+        public Goods()
         {
             InitializeGoods();
         }

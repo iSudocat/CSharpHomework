@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static OrderManageSystem.Order;
-
+using System.IO;
 namespace OrderManageSystem
 {
     class Program
@@ -13,7 +13,16 @@ namespace OrderManageSystem
         {
             var service = new OrderService();
             Order CurrentOrder = null;
-
+            
+            try
+            {
+                service.Import();
+                Console.WriteLine("成功读取了存档数据。");
+            }
+            catch(FileNotFoundException)
+            {
+                Console.WriteLine("未找到存档数据。");
+            }
             while (true)
             {
                 string op = Console.ReadLine();
@@ -97,6 +106,7 @@ namespace OrderManageSystem
                             try
                             {
                                 service.ModifyOrder(id, pname1, pnum1);
+                                Console.WriteLine("修改成功。");
                             }
                             catch (OrderInvalidException)
                             {
@@ -155,6 +165,11 @@ namespace OrderManageSystem
                             Console.WriteLine("命令格式错误，请检查后再试");
                         }
                         break;
+
+                    case 'e':
+                        service.Export();
+                        return;
+                        
                     default:
                         Console.WriteLine("请输入正确的操作指令。");
                         break;

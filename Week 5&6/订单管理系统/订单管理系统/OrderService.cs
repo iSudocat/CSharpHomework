@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace OrderManageSystem
 {
-    class OrderService
+    public class OrderService
     {
-        private List<Order> OrderList = new List<Order>();
+        public List<Order> OrderList = new List<Order>();
 
         public void AddOrder(Order order)
         {
@@ -22,11 +25,12 @@ namespace OrderManageSystem
         public void DelOrder(String id)
         {
             bool flag = false;
-            foreach (var o in OrderList)
+            //注意，不能在foreach中对集合进行修改 可使用For循环进行
+            for(var i=0;i<OrderList.Count;i++)
             {
-                if (o.ID == id)
+                if(OrderList[i].ID==id)
                 {
-                    OrderList.Remove(o);
+                    OrderList.Remove(OrderList[i]);
                     flag = true;
                 }
             }
@@ -42,13 +46,13 @@ namespace OrderManageSystem
             switch (op)
             {
                 case "ID":
-                    OrderList.OrderBy(o => o.ID);
+                    OrderList.Sort((o1, o2) => o1.ID.CompareTo(o2.ID));
                     break;
                 case "Price":
-                    OrderList.OrderBy(o => o.TotalPrice);
+                    OrderList.Sort((o1, o2) => o1.TotalPrice.CompareTo(o2.TotalPrice));
                     break;
                 case "Customer":
-                    OrderList.OrderBy(o => o.Customer);
+                    OrderList.Sort((o1, o2) => o1.Customer.CompareTo(o2.Customer));
                     break;
                 default:
                     throw new InvalidSortException("错误的排序依据。");
@@ -88,7 +92,6 @@ namespace OrderManageSystem
                     var olist = from o in OrderList
                                 where o.ID == src
                                 select o;
-                    
                     foreach (var o in olist)
                     {
                         re = re + o.ToString() + "\n";
@@ -119,8 +122,26 @@ namespace OrderManageSystem
                     throw new InvalidQueryException("错误的查询依据。");
             }
         }
-    }
 
+        public void Export()
+        {
+            XmlSerializer xmlserializer = new XmlSerializer(typeof(List<Order>));
+            using (FileStream fs = new FileStream("OrderList.xml", FileMode.Create))
+            {
+                xmlserializer.Serialize(fs, OrderList);
+            }
+        }
+
+        public void Import()
+        {
+            XmlSerializer xmlserializer = new XmlSerializer(typeof(List<Order>));
+            using (FileStream fs = new FileStream("OrderList.xml", FileMode.Open))
+            {
+                OrderList = (List<Order>)xmlserializer.Deserialize(fs);
+            }
+        }
+
+    }
 
 
     public class OrderExistsException : ApplicationException

@@ -11,7 +11,7 @@ namespace OrderManageSystem
         public string Pname { get; set; }   //商品名
         public int Pnum { get; set; }   //商品数量
 
-        Goods goods;
+        Goods goods = new Goods();
         public override bool Equals(object obj)
         {
             if (obj is OrderItem o)

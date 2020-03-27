@@ -7,11 +7,16 @@ namespace OrderManageSystem
 {
     public class Order
     {
-        Goods goods;
+        Goods goods = new Goods();
         public string Customer;
         public string ID;
         public List<OrderItem> Items;
         public double TotalPrice = 0;
+
+        public Order()
+        {
+
+        }
 
         public Order(string customer)
         {
@@ -71,6 +76,7 @@ namespace OrderManageSystem
 
         public double CalculateTotalPrice()
         {
+            TotalPrice = 0;
             foreach (var i in Items)
             {
                 TotalPrice += goods.GetPrice(i.Pname) * i.Pnum;
